@@ -1,11 +1,15 @@
 import { Controller, Get, Render } from "@nestjs/common";
+import { CorgiService } from "src/Services/corgi.service";
 
 @Controller('corgi')
 export class CorgiController {
+    constructor(private readonly corgiService: CorgiService) {}
+
     @Get()
     @Render("index")
     showCorgis() {
-    return { message: 'Corgis are the best!'};
+    const message = this.corgiService.getMessage();
+    return { message };
     }
 }
 
