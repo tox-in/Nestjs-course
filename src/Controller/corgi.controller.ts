@@ -5,11 +5,11 @@ import { CorgiService } from "src/Services/corgi.service";
 export class CorgiController {
     constructor(private readonly corgiService: CorgiService) {}
 
-    @Get()
+    @Get('compare')
     @Render("index")
-    showCorgis() {
-    const message = this.corgiService.getMessage();
-    return { message };
+    compareDogs() {
+    const comparison = this.corgiService.compareDogs();
+    return { message: comparison };
     }
 }
 
