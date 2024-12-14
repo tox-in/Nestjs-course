@@ -1,39 +1,73 @@
 import { Injectable } from '@nestjs/common';
-import { Todo } from 'src/Models/todo.model';
+import { InjectRepository } from '@nestjs/typeorm';
+import { log } from 'console';
+import { CreateTodoDto } from 'src/dto/CreateTodoDto';
+import { Todo } from 'src/Models/todo.entity';
+import { Repository } from 'typeorm';
 
 @Injectable()
 export class TodoService {
-    private todos: Todo[] = [
-        new Todo(1, 'Learn NestJS', '2023-09-01', 'Explore the basics of NestJS'),
-        new Todo(2, 'Develop MVC App', '2023-10-01', 'Build an applicattion using the MVC pattern'),
-        new Todo(3, 'Study Node.js', '2023-11-01', 'Deep dive into Node.js fundamentals'),
-        new Todo(4, 'Review TypeScript', '2023-12-01', 'Brush up on TypeScript essentials')
-    ];
-
-    findAll(): Todo[] {
-        return this.todos; 
+    constructor(
+        @InjectRepository(Todo)
+        private readonly todoRepository: Repository<Todo>,
+    ) {
+        this.logDatabaseIntegration();
     }
 
-    findOne(id: number): Todo | undefined {
-        return this.todos.find(todo => todo.id === id);
+    findAll(): Promise<Todo[]> {
+        return this.todoRepository.find(); 
     }
 
-    create(title: string, dueDate: string, description?: string): string {
-        const todo = new Todo(Date.now(), title, dueDate, description);
-        this.todos.push(todo);
-        return 'ToDO created successfully!';
+    findOne(id: number): Promise<Todo | undefined> {
+        return this.todoRepository.findOne({ where: { id: id } });
     }
 
-    update(id: number, title: string, dueDate: string, description?: string): Todo {
-        const todo = this.todos.find(todo => todo.id === id);
+    async create(createTodoDto: CreateTodoDto): Promise<string> {
+        const existingTodo = await this.todoRepository.findOne({ where: { title: createTodoDto.title}});
+        
+        if(existingTodo) {
+            return `A Todo item with title "${createTodoDto.title}" already exists.`;
+        }
+
+        const todo = this.todoRepository.create(createTodoDto);
+        await this.todoRepository.save(todo);
+        console.log(`Todo created with title: ${createTodoDto.title}`);
+        return 'Todo created successfully!';
+    }
+
+
+    async update(id: number, title: string, description?: string): Promise<string> {
+        const todo = await this.todoRepository.findOne({ where: { id } });
+
+        if(!todo) {
+            return `Todo with ID ${id} not found.`;
+        }
 
         todo.title = title;
-        todo.dueDate = dueDate;
         todo.description = description;
-        return todo;
+        
+        await this.todoRepository.save(todo);
+        console.log(`Todo with ID ${id} updated successfully.`);
+        return `Todo with ID ${id} updated successfully`
+        
     }
 
-    delete(id: number): void {
-        this.todos = this.todos.filter(todo => todo.id !== id);
+    async delete(id: number): Promise<string> {
+        const todo = await this.todoRepository.findOne({ where: { id } });
+
+        if(!todo) {
+            return `Todo with ID ${id} not found.`;
+        }
+
+        await this.todoRepository.remove(todo);
+        console.log('Todo with ID ${id} deleted successfully');
+        return `Todo with Todo with ID ${id} deleted successfully.`;
+        
+    }
+
+
+    private logDatabaseIntegration() {
+        console.log('Database integration has been successfully established.');
+        
     }
 }

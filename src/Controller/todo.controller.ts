@@ -1,6 +1,7 @@
 import { Body, Controller, Delete, Get, Param, Post, Put, Render } from "@nestjs/common";
+import { title } from "process";
+import { CreateTodoDto } from "src/dto/CreateTodoDto";
 import { TodoService } from "src/Services/todo.service";
-import { threadId } from "worker_threads";
 
 @Controller('todos')
 export class TodoController {
@@ -17,27 +18,31 @@ export class TodoController {
     @Render('details')
     findOne(@Param('id') id: string) {
         const todo = this.todoService.findOne(Number(id));
+        if(!todo) return { title: 'ToDo Details', message: `Todo with ID ${id} not found.`};
         return { title: 'ToDo Details', todo}
     }
 
     @Post()
     @Render('index')
-    create(@Body() body) {
-        const message = this.todoService.create(body.title, body.dueDate, body.description);
-        return { message, todos: this.todoService.findAll() };
+    async create(@Body() createTodoDto: CreateTodoDto) {
+        const message = await this.todoService.create(createTodoDto);
+        const todos = await this.todoService.findAll();
+        return { title: 'ToDo List', todos, message };
     }
 
     @Put(':id')
     @Render('index')
-    update(@Param('id') id: string, @Body() body) {
-        this.todoService.update(Number(id), body.title, body.dueDate, body.description);
-        return { title: 'ToDo List', todos: this.todoService.findAll() };
+    async update(@Param('id') id: string, @Body() body) {
+        const message = await this.todoService.update(Number(id), body.title, body.description);
+        const todos = await this.todoService.findAll();
+        return { title: 'ToDo List', todos, message};
     }
 
     @Delete(':id')
     @Render('index')
-    delete(@Param('id') id: string) {
-        this.todoService.delete(Number(id));
-        return { title: 'ToDo List', todos: this.todoService.findAll() };
+    async delete(@Param('id') id: string) {
+        const message = this.todoService.delete(Number(id));
+        const todos = await this.todoService.findAll();
+        return { title: 'ToDo List', todos, message };
     }
 }
