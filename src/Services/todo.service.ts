@@ -17,4 +17,10 @@ export class TodoService {
     findOne(id: number): Todo | undefined {
         return this.todos.find(todo => todo.id === id);
     }
+
+    create(title: string, dueDate: string, description?: string): string {
+        const todo = new Todo(Date.now(), title, dueDate, description);
+        this.todos.push(todo);
+        return 'ToDO created successfully!';
+    }
 }

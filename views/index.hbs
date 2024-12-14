@@ -10,6 +10,23 @@
     <a href='/'>Home</a>
     <a href='/todos'>Go to ToDo List</a>
   </nav>
+  <div>
+    <h2>Create New ToDo</h2>
+    <form action="/todos" method="post">
+      <div>
+        <input type="text" name="title" placeholder="Title" required />
+      </div>
+      <div>
+        <input type="date" name="dueDate" placeholder="Due Date" required />
+      </div>
+      <div>
+        <input type="text" name="description" placeholder="Description" />
+      </div>
+      <div>
+        <button type="submit">Add ToDo</button>
+      </div>
+    </form>
+  </div>
   <div class='container'>
     {{#each todos}}
     <li>{{this.title}} - ID: {{this.id}} - {{this.description}}</li>
