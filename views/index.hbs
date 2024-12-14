@@ -3,15 +3,12 @@
     <title>{{title}}</title>
   </head>
   <body>
-    <h1>ToDo App</h1>
+    <h1>ToDo List</h1>
     <nav>
       <a href='/'>Home</a>
       <a href='/todos'>Go to ToDo List</a>
     </nav>
     <div class='container'>
-      {{{body}}}
-      <h1>{{title}}</h1>
-      <ul>
         {{#each todos}}
           <li>{{this.title}} - {{this.description}}</li>
         {{/each}}
