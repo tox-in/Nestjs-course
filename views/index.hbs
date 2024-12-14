@@ -28,10 +28,15 @@
     </form>
   </div>
   <div class='container'>
-    {{#each todos}}
-    <li>{{this.title}} - ID: {{this.id}} - {{this.description}}</li>
-    {{/each}}
-    </ul>
+    <ul>
+  {{#each todos}}
+    <li>
+      <strong>{{this.title}}</strong><br>
+      {{this.description}}<br>
+      <em>Due: {{this.dueDate}}</em>
+    </li>
+  {{/each}}
+</ul>
   </div>
   <div class="search-container">
     <h2>Find ToDo by ID</h2>
@@ -42,13 +47,14 @@
   </div>
 </body>
 <script>
-  document.getElementById('find-todo-form').addEventListener('submit', function(event) {
+  document.getElementById('find-todo-form').addEventListener('submit', function (event) {
     event.preventDefault();
     const todoId = document.getElementById('todo-id').value;
     if (todoId) {
       window.location.href = `/todos/${todoId}`;
     }
   });
+
 </script>
 
 </html>

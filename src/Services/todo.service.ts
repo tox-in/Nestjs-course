@@ -23,4 +23,17 @@ export class TodoService {
         this.todos.push(todo);
         return 'ToDO created successfully!';
     }
+
+    update(id: number, title: string, dueDate: string, description?: string): Todo {
+        const todo = this.todos.find(todo => todo.id === id);
+
+        todo.title = title;
+        todo.dueDate = dueDate;
+        todo.description = description;
+        return todo;
+    }
+
+    delete(id: number): void {
+        this.todos = this.todos.filter(todo => todo.id !== id);
+    }
 }
